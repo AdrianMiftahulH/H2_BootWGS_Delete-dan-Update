@@ -107,13 +107,13 @@ const upContact = (namePre, newName, newEmail, newMobile) => {
             contacts[findName].name = newName;
         }
         if (newEmail) {
-            if (validator.isEmail(newEmail)) {
+            if (!validator.isEmail(newEmail)) {
                 arrN.push('Account Email valid!');
             }
             contacts[findName].email = newEmail;
         }
         if (newMobile) {
-            if (validator.isMobilePhone(newMobile, "id-ID")) {
+            if (!validator.isMobilePhone(newMobile, "id-ID")) {
                 arrN.push('Account Email valid!');
             }
             contacts[findName].mobile = newMobile;
