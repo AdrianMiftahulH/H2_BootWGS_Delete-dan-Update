@@ -21,21 +21,6 @@ if (!fs.existsSync("./data/contacts.json")) {
     fs.writeFileSync('./data/contacts.json', "[]");
 }
 
-
-//Buat variabel ask dan function dengan parameter nanya
-// const ask = (nanya) => {
-//     //Membuat Promise 
-//     return new Promise((resolve, reject) => {
-//         // Menambahkan pertanyaan dengan parameter nanya dan membuat f dengan parameter jawaban
-//         rl.question(nanya, (jawaban) => {
-//             // Bila Promisenya resolve akan mengambil parameter jawaban
-//             resolve(jawaban);
-//         });
-//     });
-// };
-
-
-
 // Untuk Membaca Data
 const loadContact = () => {
     const file = fs.readFileSync('data/contacts.json', 'utf-8');
@@ -94,38 +79,54 @@ const deleteContact = (name) => {
 }
 
 // MengUpdate Data
-const upContact = (namePre, newName, newEmail, newMobile) => {
+const upContact  = (namePre, newName, newEmail, newMobile) => {
+    // mendapatkan semua data dari json
     const contacts = loadContact();
-    const arrN = [];
+    // Filter data contact
+    const NewContact = contacts.filter((contact) => contact.nama.toLowerCase() !== namePre.toLowerCase());
 
-    // Temukan data terlebih dahulu, lalu buat array baru dengan filter
-    const findName = contacts.findIndex((contact) => contact.name.toLowerCase() === namePre.toLowerCase());
+    // Cek length Contact jika sama maka data tidak ada
+    if(contacts.length === NewContact.length) {
+        console.log('Nama Contact tidak ada!');
+        return false;
+    }
 
+    // Mencari data Lama
+    const contactPre = contacts.find((contact) => contact.nama.toLowerCase() === namePre.toLowerCase());
+     // Mengembalikan Posisi Pertama Jadi ditentukan
+    const index = contacts.indexOf(contactPre);
 
-    if (findName > -1) {
-        if (newName) {
-            contacts[findName].name = newName;
-        }
-        if (newEmail) {
-            if (!validator.isEmail(newEmail)) {
-                arrN.push('Account Email valid!');
-            }
-            contacts[findName].email = newEmail;
-        }
-        if (newMobile) {
-            if (!validator.isMobilePhone(newMobile, "id-ID")) {
-                arrN.push('Account Email valid!');
-            }
-            contacts[findName].mobile = newMobile;
-        }
-        if (arrN.length > 0) {
-            console.log('Data invalid');
+    // Pengkondisian jika nama di ubah sama
+    if(nama) {
+        // Cek Duplikat Nama
+        const duplikat = contacts.find((contact) => contact.nama.toLowerCase() === nama.toLowerCase() );
+        if(duplikat) {
+            console.log('Maaf, Contact yang anda masukan sudah tersedia.');
             return false;
         }
+        contacts[index].nama = nama; 
     }
-    fs.writeFileSync('data/contacts.json', JSON.stringify(contacts));
-    // Output ke terminal sesuai jawaban di pertanyaan
-    console.log(`data has been updated`);
+
+    // Pengkondisian jika email di ubah sama
+    if(email) {
+        if(!validator.isEmail(email)) {
+            console.log('Maaf Email Tidak Valid!');
+            return false;
+        }
+        contacts[index].email = email;
+    }
+
+    // Pengkondisian jika mobile di ubah sama
+    if(mobile) {
+        if(!validator.isMobilePhone(mobile, 'id-ID')) {
+            console.log('Maaf No Hp Tidak Valid!');
+            return false;
+        }
+        contacts[index].mobile = mobile;
+    }
+    // Save Data yang sudah di Update
+    fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2));
+    console.log('Data Contact Berhasil di Update!');
 }
 // Menyimpan Data
 const saveData = (name, email, mobile,) => {
